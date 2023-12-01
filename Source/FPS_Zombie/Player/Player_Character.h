@@ -8,7 +8,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Player_Character.generated.h"
 
-
 UCLASS()
 class FPS_ZOMBIE_API APlayer_Character : public ACharacter
 {
@@ -23,7 +22,4 @@ private:
 
 public:
 	APlayer_Character();
-
-	
-
 };

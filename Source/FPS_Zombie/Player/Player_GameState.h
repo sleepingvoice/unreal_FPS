@@ -13,5 +13,8 @@ UCLASS()
 class FPS_ZOMBIE_API APlayer_GameState : public AGameStateBase
 {
 	GENERATED_BODY()
-	
+
+
+public:
+	APlayer_GameState();
 };

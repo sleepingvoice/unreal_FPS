@@ -3,3 +3,7 @@
 
 #include "Player_GameState.h"
 
+APlayer_GameState::APlayer_GameState()
+{
+	
+}
