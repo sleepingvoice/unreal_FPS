@@ -16,13 +16,12 @@ class FPS_ZOMBIE_API UPlayer_AnimInstance : public UAnimInstance
 
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	EAniState_Normal NormalState = EAniState_Normal::Idle;
+	EAniState_Move MoveState = EAniState_Move::Idle;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	APlayer_Controller* PlayerCon;
+	EAniState_Weapon WeaponState = EAniState_Weapon::NoWeapon;
 	
 private:
-	APlayer_Character* Player;
 	
 public :
 	UPlayer_AnimInstance();

@@ -6,13 +6,32 @@
 
 APlayer_State::APlayer_State()
 {
-	PlayerNormalState = EAniState_Normal::Idle;
-	WeaponValue = EWeapon_Value::NoWeapon;
+	PlayerMove = EAniState_Move::Idle;
+	PlayerWeapon = EAniState_Weapon::NoWeapon;
 }
 
 void APlayer_State::BeginPlay()
 {
-	Cast<APlayer_Controller>(GetPawn()->Controller)->AddChangeListener(PlayerNormalState);
-	UE_LOG(LogTemp,Log,TEXT("이벤트 추가"));
+	AddMoveListener(PlayerMove);
+}
+
+void APlayer_State::AddMoveListener(EAniState_Move& State)
+{
+	ChangeMove.AddLambda([&](EAniState_Move Setstate){ State = Setstate; });
+}
+
+void APlayer_State::ChangeMoveState(EAniState_Move Value)
+{
+	if(ChangeMove.IsBound()) ChangeMove.Broadcast(Value);
+}
+
+void APlayer_State::AddWeaponListener(EAniState_Weapon& State)
+{
+	ChangeWeapon.AddLambda([&](EAniState_Weapon Setstate){ State = Setstate; });
+}
+
+void APlayer_State::ChangeWeaponState(EAniState_Weapon Value)
+{
+	if(ChangeWeapon.IsBound()) ChangeWeapon.Broadcast(Value);
 }
 

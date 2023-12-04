@@ -15,10 +15,11 @@ void UPlayer_AnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
 	
-	PlayerCon = Cast<APlayer_Controller>(TryGetPawnOwner()->Controller);
-	if(PlayerCon != nullptr)
+	auto PlayerState = Cast<APlayer_State>(TryGetPawnOwner()->GetPlayerState());
+	if(PlayerState)
 	{
-		PlayerCon->AddChangeListener(NormalState);
+		PlayerState->AddMoveListener(MoveState);
+		PlayerState->AddWeaponListener(WeaponState);
 	}
 	
 }

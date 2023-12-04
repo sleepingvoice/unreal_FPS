@@ -4,7 +4,7 @@
 
 
 	UENUM(BlueprintType)
-	enum class EAniState_Normal : uint8
+	enum class EAniState_Move : uint8
 	{
 		Idle = 0 UMETA(DisplayName = "Idle"),
 		Walk = 1 UMETA(DisplayName = "Walk"),
@@ -14,7 +14,7 @@
 	};
 
 UENUM(BlueprintType)
-enum class EWeapon_Value : uint8
+enum class EAniState_Weapon : uint8
 {
 	NoWeapon = 0 UMETA(DisplayName = "NoWeapon"),
 	Knife = 1 UMETA(DisplayName = "Knife"),

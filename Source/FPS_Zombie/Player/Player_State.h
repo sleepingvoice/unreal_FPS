@@ -7,6 +7,9 @@
 #include "GameFramework/PlayerState.h"
 #include "Player_State.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FMulti_MoveState,EAniState_Move);
+DECLARE_MULTICAST_DELEGATE_OneParam(FMUlti_WeaponState,EAniState_Weapon);
+
 UCLASS()
 class FPS_ZOMBIE_API APlayer_State : public APlayerState
 {
@@ -14,13 +17,28 @@ class FPS_ZOMBIE_API APlayer_State : public APlayerState
 	
 public:
 	UPROPERTY()
-	EAniState_Normal PlayerNormalState;
+	EAniState_Move PlayerMove;
 
 	UPROPERTY()
-	EWeapon_Value WeaponValue;
+	EAniState_Weapon PlayerWeapon;
+
+private:
+	FMulti_MoveState ChangeMove;
+
+	FMUlti_WeaponState ChangeWeapon;
 
 public:
 	APlayer_State();
 	
 	virtual void BeginPlay() override;
+
+	void AddMoveListener(EAniState_Move& State);
+
+	void AddWeaponListener(EAniState_Weapon& State);
+	
+	UFUNCTION(BlueprintCallable)
+	void ChangeMoveState(EAniState_Move Value);
+
+	UFUNCTION(BlueprintCallable)
+	void ChangeWeaponState(EAniState_Weapon Value);
 };

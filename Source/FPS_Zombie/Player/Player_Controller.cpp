@@ -38,22 +38,26 @@ void APlayer_Controller::BeginPlay()
 		}
 	}
 
-	ChangeNormal.AddLambda([&](EAniState_Normal state){ NormalState = state; });
-	ChangeNormal.AddLambda([](EAniState_Normal state){ UE_LOG(LogTemp,Log,TEXT("%d"),state) });
+	PlayCharacterState = Cast<APlayer_State>(GetPawn()->GetPlayerState());
+	if(PlayCharacterState)
+	{
+		PlayCharacterState->AddMoveListener(MoveState);
+		PlayCharacterState->AddWeaponListener(WeaponState);
+	}
 }
 
 void APlayer_Controller::Tick(float DeltaSeconds)
 {
-	if(NormalState == EAniState_Normal::Jump) // 점프중일때
+	if(MoveState == EAniState_Move::Jump) // 점프중일때
 	{
 		auto Movement = PlayerCharacter->GetMovementComponent()->Velocity; //떨어지는 중이면
 		if(Movement.Z < 0)
 		{
-			ChangeNormalState(EAniState_Normal::Fall); // 상태변화
+			PlayCharacterState->ChangeMoveState(EAniState_Move::Fall); // 상태변화
 		}
 	}
 	
-	if(NormalState == EAniState_Normal::Fall) // 떨어질때
+	if(MoveState == EAniState_Move::Fall) // 떨어질때
 	{
 		CheckJump();
 	}
@@ -75,17 +79,17 @@ void APlayer_Controller::Move(const FInputActionValue& Value)
 	GetPawn()->AddMovementInput(ForwardDirection, MovementVector.Y);
 	GetPawn()->AddMovementInput(RightDirection, MovementVector.X);
 	
-	if(NormalState == EAniState_Normal::Idle)
+	if(MoveState == EAniState_Move::Idle)
 	{
-		ChangeNormalState(EAniState_Normal::Walk);
+		PlayCharacterState->ChangeMoveState(EAniState_Move::Walk);
 	}
 }
 
 void APlayer_Controller::MoveStop(const FInputActionValue& Value)
 {
-	if(NormalState == EAniState_Normal::Walk)
+	if(MoveState == EAniState_Move::Walk)
 	{
-		ChangeNormalState(EAniState_Normal::Idle);
+		PlayCharacterState->ChangeMoveState(EAniState_Move::Idle);
 	}
 }
 
@@ -101,9 +105,9 @@ void APlayer_Controller::Look(const FInputActionValue& Value)
 void APlayer_Controller::Jump(const FInputActionValue& Value)
 {
 	PlayerCharacter -> Jump();
-	if(NormalState != EAniState_Normal::Jump)
+	if(MoveState != EAniState_Move::Jump)
 	{
-		ChangeNormal.Broadcast(EAniState_Normal::Jump);
+		PlayCharacterState->ChangeMoveState(EAniState_Move::Jump);
 	}
 }
 
@@ -124,16 +128,6 @@ void APlayer_Controller::RightClick(const FInputActionValue& Value)
 }
 
 
-void APlayer_Controller::AddChangeListener(EAniState_Normal& State)
-{
-	ChangeNormal.AddLambda([&](EAniState_Normal state){ State = state; });
-}
-
-void APlayer_Controller::ChangeNormalState(EAniState_Normal Value)
-{
-	ChangeNormal.Broadcast(Value);
-}
-
 void APlayer_Controller::CheckJump()
 {
 	FHitResult HitResult;
@@ -149,6 +143,6 @@ void APlayer_Controller::CheckJump()
 	
 	if(bResult)
 	{
-		ChangeNormalState(EAniState_Normal::Idle);
+		PlayCharacterState->ChangeMoveState(EAniState_Move::Idle);
 	}
 }

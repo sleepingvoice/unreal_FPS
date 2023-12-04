@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Player_Weapon_Base.h"
 #include "Player_Enum.h"
+#include "Player_State.h"
 #include "Player_Character.generated.h"
 
 UCLASS()
@@ -29,7 +30,6 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-
 
 	
 public:
