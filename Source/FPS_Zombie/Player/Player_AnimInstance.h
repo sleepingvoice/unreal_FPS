@@ -26,6 +26,9 @@ private:
 	
 public :
 	UPlayer_AnimInstance();
+	
 	virtual void NativeBeginPlay() override;
+	
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
 };

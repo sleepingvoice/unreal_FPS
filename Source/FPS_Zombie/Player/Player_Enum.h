@@ -13,3 +13,11 @@
 		Fall = 4 UMETA(DisplayerName = "Fall")
 	};
 
+UENUM(BlueprintType)
+enum class EWeapon_Value : uint8
+{
+	NoWeapon = 0 UMETA(DisplayName = "NoWeapon"),
+	Knife = 1 UMETA(DisplayName = "Knife"),
+	Pistol = 2 UMETA(DisplayName = "Pistol"),
+	Rifle = 0 UMETA(DisplayName = "Rifle")
+};

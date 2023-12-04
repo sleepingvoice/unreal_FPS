@@ -2,10 +2,7 @@
 
 
 #include "Player_AnimInstance.h"
-
-#include "Player_Controller.h"
 #include "Player_State.h"
-#include "GameFramework/PawnMovementComponent.h"
 
 APlayer_State* Target;
 
@@ -30,4 +27,5 @@ void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 }
+
 

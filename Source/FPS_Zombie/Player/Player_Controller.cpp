@@ -30,8 +30,10 @@ void APlayer_Controller::BeginPlay()
 	PlayerCharacter = Cast<APlayer_Character>(GetPawn());
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetPawn()->Controller))
 	{
+
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
+			UE_LOG(LogTemp,Log,TEXT("이건가?"));
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}

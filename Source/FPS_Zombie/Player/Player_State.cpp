@@ -7,6 +7,7 @@
 APlayer_State::APlayer_State()
 {
 	PlayerNormalState = EAniState_Normal::Idle;
+	WeaponValue = EWeapon_Value::NoWeapon;
 }
 
 void APlayer_State::BeginPlay()

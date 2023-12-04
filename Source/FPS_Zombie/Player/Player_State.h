@@ -16,6 +16,9 @@ public:
 	UPROPERTY()
 	EAniState_Normal PlayerNormalState;
 
+	UPROPERTY()
+	EWeapon_Value WeaponValue;
+
 public:
 	APlayer_State();
 	
