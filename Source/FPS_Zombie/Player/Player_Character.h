@@ -23,10 +23,13 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Weapon")
 	TArray<TSubclassOf<class APlayer_Weapon_Base>> TargetWeaponArr;
 
+	AActor* BeforeActor = nullptr;
 private:
 	TMap<EAniState_Weapon,AActor*> WeaponActorMap;
-	AActor* BeforeActor = nullptr;
 	
+
+
+	EAniState_Weapon WeaponState = EAniState_Weapon::NoWeapon;
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;

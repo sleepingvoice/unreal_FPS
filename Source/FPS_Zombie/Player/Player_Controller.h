@@ -74,6 +74,8 @@ public:
 
 	void LeftClick(const FInputActionValue& Value);
 
+	void LeftClickStop(const FInputActionValue& Value);
+
 	void RightClick(const FInputActionValue& Value);
 
 	void KinfeHold(const FInputActionValue& Value);

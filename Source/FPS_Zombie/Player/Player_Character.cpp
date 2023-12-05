@@ -32,22 +32,28 @@ APlayer_Character::APlayer_Character()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	auto state = Cast<APlayer_State>(GetPlayerState());
+	if(state)
+	{
+		state->AddWeaponListener(WeaponState);
+	}
 }
+
 
 void APlayer_Character::AttachWeapon(int WeaponArrNum) 
 {
-	if(TargetWeaponArr.Num() > WeaponArrNum && CheckWeapon!=WeaponArrNum)
+	EAniState_Weapon TargetState = (EAniState_Weapon)(WeaponArrNum +1);
+	UE_LOG(LogTemp,Log,TEXT("%d"),TargetState);
+	
+	if(WeaponState!=TargetState && TargetState > EAniState_Weapon::NoWeapon)
 	{
-		if(BeforeActor)
-		{
-			BeforeActor->SetActorHiddenInGame(true);
-		}
+		
+		if(BeforeActor) BeforeActor->SetActorHiddenInGame(true);
 		
 		CheckWeapon = WeaponArrNum;
-
-		EAniState_Weapon TargetState = (EAniState_Weapon)(WeaponArrNum +1);
 		
-		if(!WeaponActorMap.Contains(TargetState))
+		if(!WeaponActorMap.Contains(TargetState) && WeaponArrNum < TargetWeaponArr.Num())
 		{
 			AActor* SpawnWeapon = GetWorld()->SpawnActor<APlayer_Weapon_Base>(TargetWeaponArr[WeaponArrNum]);
 			WeaponActorMap.Add(TargetState,SpawnWeapon);
@@ -63,8 +69,11 @@ void APlayer_Character::AttachWeapon(int WeaponArrNum)
 			WeaponActorMap[TargetState]->SetActorHiddenInGame(false);
 			BeforeActor = WeaponActorMap[TargetState];
 		}
-
-
+	}
+	else if(TargetState == EAniState_Weapon::NoWeapon)
+	{
+		if(BeforeActor) BeforeActor->SetActorHiddenInGame(true);
+		Cast<APlayer_State>(GetPlayerState())->ChangeWeaponState(TargetState);
 	}
 }
 

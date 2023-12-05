@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Player_Weapon_Base.generated.h"
 
 UCLASS()
@@ -19,7 +21,22 @@ public:
 	FRotator TargetRotate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
-	TObjectPtr<USkeletalMeshComponent> MeshComponent;
+	USkeletalMeshComponent* MeshComponent;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Effect")
+	UNiagaraComponent* MuzzleComponent;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
+	FName BoneName;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
+	UNiagaraSystem* MuzzleEffect;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
+	UNiagaraSystem* SparksEffect;
+
+private:
+	virtual void BeginPlay() override;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -27,5 +44,10 @@ public:
 
 	void SetPos();
 
+	UFUNCTION()
+	void Shot();
+
+	UFUNCTION()
+	void NoShot();
 	
 };

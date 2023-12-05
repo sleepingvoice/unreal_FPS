@@ -21,11 +21,12 @@ void APlayer_Controller::SetupInputComponent()
 		EnhancedInputComponent->BindAction(Input_Look, ETriggerEvent::Triggered, this, &APlayer_Controller::Look);
 
 		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Triggered, this, &APlayer_Controller::LeftClick);
+		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Completed, this, &APlayer_Controller::LeftClickStop);
 		EnhancedInputComponent->BindAction(Input_RightClick, ETriggerEvent::Triggered, this, &APlayer_Controller::RightClick);
 
-		EnhancedInputComponent->BindAction(Input_Knife,ETriggerEvent::Triggered,this,&APlayer_Controller::KinfeHold);
-		EnhancedInputComponent->BindAction(Input_Pistol,ETriggerEvent::Triggered,this,&APlayer_Controller::PistolHold);
-		EnhancedInputComponent->BindAction(Input_Rifle,ETriggerEvent::Triggered,this,&APlayer_Controller::RifleHold);
+		EnhancedInputComponent->BindAction(Input_Knife,ETriggerEvent::Started,this,&APlayer_Controller::KinfeHold);
+		EnhancedInputComponent->BindAction(Input_Pistol,ETriggerEvent::Started,this,&APlayer_Controller::PistolHold);
+		EnhancedInputComponent->BindAction(Input_Rifle,ETriggerEvent::Started,this,&APlayer_Controller::RifleHold);
 	}
 }
 
@@ -127,7 +128,16 @@ void APlayer_Controller::JumpStop(const FInputActionValue& Value)
 
 void APlayer_Controller::LeftClick(const FInputActionValue& Value)
 {
-	
+	if(WeaponState != EAniState_Weapon::Rifle) return;
+
+	Cast<APlayer_Weapon_Base>(PlayerCharacter->BeforeActor)->Shot();
+}
+
+void APlayer_Controller::LeftClickStop(const FInputActionValue& Value)
+{
+	if(WeaponState != EAniState_Weapon::Rifle) return;
+
+	Cast<APlayer_Weapon_Base>(PlayerCharacter->BeforeActor)->NoShot();
 }
 
 void APlayer_Controller::RightClick(const FInputActionValue& Value)
@@ -137,18 +147,18 @@ void APlayer_Controller::RightClick(const FInputActionValue& Value)
 
 void APlayer_Controller::KinfeHold(const FInputActionValue& Value)
 {
-	PlayerCharacter->AttachWeapon(0);
+	WeaponState != EAniState_Weapon::Knife ? PlayerCharacter->AttachWeapon(0):PlayerCharacter->AttachWeapon(-1);
 }
 
 void APlayer_Controller::PistolHold(const FInputActionValue& Value)
 {
-	PlayerCharacter->AttachWeapon(1);
+	WeaponState != EAniState_Weapon::Pistol ? PlayerCharacter->AttachWeapon(1):PlayerCharacter->AttachWeapon(-1);
 }
 
 
 void APlayer_Controller::RifleHold(const FInputActionValue& Value)
 {
-	PlayerCharacter->AttachWeapon(2);
+	WeaponState != EAniState_Weapon::Rifle ? PlayerCharacter->AttachWeapon(2):PlayerCharacter->AttachWeapon(-1);
 }
 
 void APlayer_Controller::CheckJump()
