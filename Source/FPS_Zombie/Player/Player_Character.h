@@ -21,7 +21,11 @@ public:
 	FName WeaponSocketName;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Weapon")
-	TSubclassOf<class APlayer_Weapon_Base> Target;
+	TArray<TSubclassOf<class APlayer_Weapon_Base>> TargetWeaponArr;
+
+private:
+	TMap<EAniState_Weapon,AActor*> WeaponActorMap;
+	AActor* BeforeActor = nullptr;
 	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -31,12 +35,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
-	
+	int CheckWeapon = -1;
 public:
 	APlayer_Character();
 
 	UFUNCTION(BlueprintCallable)
-	void AttachWeapon(TSubclassOf<APlayer_Weapon_Base> Weapon) const;
-
-	virtual void BeginPlay() override;
+	void AttachWeapon(int WeaponArrNum);
 };

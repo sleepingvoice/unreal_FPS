@@ -22,27 +22,33 @@ public:
 	virtual void SetupInputComponent() override;
 	
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input_Mapping", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input_Mapping", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Jump;
 
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input_Mapping", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Move;
 
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input_Mapping", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Look;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Input_Mapping", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_LeftClick;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Input_Mapping", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_RightClick;
 
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Input_Mapping", meta = (AllowPrivateAccess = "true"))
+	UInputAction* Input_Knife;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Input_Mapping", meta = (AllowPrivateAccess = "true"))
+	UInputAction* Input_Pistol;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Input_Mapping", meta = (AllowPrivateAccess = "true"))
+	UInputAction* Input_Rifle;
+	
 	UPROPERTY()
 	APlayer_Character* PlayerCharacter;
 
@@ -69,6 +75,12 @@ public:
 	void LeftClick(const FInputActionValue& Value);
 
 	void RightClick(const FInputActionValue& Value);
+
+	void KinfeHold(const FInputActionValue& Value);
+
+	void PistolHold(const FInputActionValue& Value);
+
+	void RifleHold(const FInputActionValue& Value);
 	
 	void CheckJump();
 private:

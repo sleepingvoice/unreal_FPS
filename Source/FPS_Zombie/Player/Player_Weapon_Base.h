@@ -10,11 +10,22 @@ UCLASS()
 class FPS_ZOMBIE_API APlayer_Weapon_Base : public AActor
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "AttachPos")
+	FVector TargetPos;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "AttachPos")
+	FRotator TargetRotate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
+	TObjectPtr<USkeletalMeshComponent> MeshComponent;
 	
 public:	
 	// Sets default values for this actor's properties
 	APlayer_Weapon_Base();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
-	class USkeletalMeshComponent* MeshComponent;
+	void SetPos();
+
+	
 };

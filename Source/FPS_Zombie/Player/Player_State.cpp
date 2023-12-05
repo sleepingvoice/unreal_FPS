@@ -33,5 +33,6 @@ void APlayer_State::AddWeaponListener(EAniState_Weapon& State)
 void APlayer_State::ChangeWeaponState(EAniState_Weapon Value)
 {
 	if(ChangeWeapon.IsBound()) ChangeWeapon.Broadcast(Value);
+	UE_LOG(LogTemp,Log,TEXT("%d"),Value);
 }
 

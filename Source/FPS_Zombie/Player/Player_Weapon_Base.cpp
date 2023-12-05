@@ -10,5 +10,12 @@ APlayer_Weapon_Base::APlayer_Weapon_Base()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	MeshComponent=CreateDefaultSubobject<USkeletalMeshComponent>(FName("WeaponMesh"));
-	RootComponent = MeshComponent;
+
+	SetRootComponent(MeshComponent);
+}
+
+void APlayer_Weapon_Base::SetPos()
+{
+	this->SetActorRelativeLocation(TargetPos);
+	this->SetActorRelativeRotation(TargetRotate);
 }
