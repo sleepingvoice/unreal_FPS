@@ -20,7 +20,7 @@ void APlayer_Controller::SetupInputComponent()
 		
 		EnhancedInputComponent->BindAction(Input_Look, ETriggerEvent::Triggered, this, &APlayer_Controller::Look);
 
-		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Triggered, this, &APlayer_Controller::LeftClick);
+		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Started, this, &APlayer_Controller::LeftClick);
 		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Completed, this, &APlayer_Controller::LeftClickStop);
 		EnhancedInputComponent->BindAction(Input_RightClick, ETriggerEvent::Triggered, this, &APlayer_Controller::RightClick);
 
@@ -49,6 +49,7 @@ void APlayer_Controller::BeginPlay()
 	{
 		PlayCharacterState->AddMoveListener(MoveState);
 		PlayCharacterState->AddWeaponListener(WeaponState);
+		PlayCharacterState->AddUpperistener(UpperState);
 	}
 }
 
@@ -130,7 +131,10 @@ void APlayer_Controller::LeftClick(const FInputActionValue& Value)
 {
 	if(WeaponState != EAniState_Weapon::Rifle) return;
 
-	Cast<APlayer_Weapon_Base>(PlayerCharacter->BeforeActor)->Shot();
+	Cast<APlayer_Weapon_Base>(PlayerCharacter->BeforeActor)->Shot(PlayerCharacter);
+	PlayCharacterState->ChangeUpperState(EAnistate_UpperBody::Shot);
+	MoveSpeed = PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed;
+	PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed*0.5f;
 }
 
 void APlayer_Controller::LeftClickStop(const FInputActionValue& Value)
@@ -138,6 +142,8 @@ void APlayer_Controller::LeftClickStop(const FInputActionValue& Value)
 	if(WeaponState != EAniState_Weapon::Rifle) return;
 
 	Cast<APlayer_Weapon_Base>(PlayerCharacter->BeforeActor)->NoShot();
+	PlayCharacterState->ChangeUpperState(EAnistate_UpperBody::Normal);
+	PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
 }
 
 void APlayer_Controller::RightClick(const FInputActionValue& Value)

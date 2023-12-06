@@ -20,6 +20,9 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	EAniState_Weapon WeaponState = EAniState_Weapon::NoWeapon;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	EAnistate_UpperBody UpperState = EAnistate_UpperBody::Normal;
 	
 private:
 	

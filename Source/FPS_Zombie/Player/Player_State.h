@@ -9,6 +9,7 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FMulti_MoveState,EAniState_Move);
 DECLARE_MULTICAST_DELEGATE_OneParam(FMUlti_WeaponState,EAniState_Weapon);
+DECLARE_MULTICAST_DELEGATE_OneParam(FMUlti_UpperState,EAnistate_UpperBody);
 
 UCLASS()
 class FPS_ZOMBIE_API APlayer_State : public APlayerState
@@ -22,10 +23,15 @@ public:
 	UPROPERTY()
 	EAniState_Weapon PlayerWeapon;
 
+	UPROPERTY()
+	EAnistate_UpperBody PlayerUpperBody;
+
 private:
 	FMulti_MoveState ChangeMove;
 
 	FMUlti_WeaponState ChangeWeapon;
+
+	FMUlti_UpperState ChangeUpper;
 
 public:
 	APlayer_State();
@@ -35,10 +41,15 @@ public:
 	void AddMoveListener(EAniState_Move& State);
 
 	void AddWeaponListener(EAniState_Weapon& State);
+
+	void AddUpperistener(EAnistate_UpperBody& State);
 	
 	UFUNCTION(BlueprintCallable)
 	void ChangeMoveState(EAniState_Move Value);
 
 	UFUNCTION(BlueprintCallable)
 	void ChangeWeaponState(EAniState_Weapon Value);
+
+	UFUNCTION(BlueprintCallable)
+	void ChangeUpperState(EAnistate_UpperBody Value);
 };

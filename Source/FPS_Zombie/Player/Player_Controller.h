@@ -49,17 +49,18 @@ private:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Input_Mapping", meta = (AllowPrivateAccess = "true"))
 	UInputAction* Input_Rifle;
 	
-	UPROPERTY()
-	APlayer_Character* PlayerCharacter;
-
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Animation,meta=(AllowPrivateAccess="true"))
 	float DownDis;
 
+	UPROPERTY()
+	APlayer_Character* PlayerCharacter;
+	
 	UPROPERTY()
 	APlayer_State* PlayCharacterState;
 
 	EAniState_Move MoveState = EAniState_Move::Idle;
 	EAniState_Weapon WeaponState = EAniState_Weapon::NoWeapon;
+	EAnistate_UpperBody UpperState = EAnistate_UpperBody::Normal;
 
 public:
 	void Move(const FInputActionValue& Value);

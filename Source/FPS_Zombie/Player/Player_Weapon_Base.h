@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -13,6 +11,8 @@ class FPS_ZOMBIE_API APlayer_Weapon_Base : public AActor
 {
 	GENERATED_BODY()
 
+private:
+	
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "AttachPos")
 	FVector TargetPos;
@@ -28,12 +28,19 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
 	FName BoneName;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
-	UNiagaraSystem* MuzzleEffect;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
 	UNiagaraSystem* SparksEffect;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
+	FVector EffectPlusVec;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Weapon")
+	float AttackRange;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Weapon")
+	float CheckAttackTime;
+
 
 private:
 	virtual void BeginPlay() override;
@@ -45,7 +52,7 @@ public:
 	void SetPos();
 
 	UFUNCTION()
-	void Shot();
+	void Shot(ACharacter* ShotCharacter);
 
 	UFUNCTION()
 	void NoShot();

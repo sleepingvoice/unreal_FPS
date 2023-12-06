@@ -35,3 +35,13 @@ void APlayer_State::ChangeWeaponState(EAniState_Weapon Value)
 	if(ChangeWeapon.IsBound()) ChangeWeapon.Broadcast(Value);
 }
 
+void APlayer_State::AddUpperistener(EAnistate_UpperBody& State)
+{
+	ChangeUpper.AddLambda([&](EAnistate_UpperBody Setstate){ State = Setstate; });
+}
+
+void APlayer_State::ChangeUpperState(EAnistate_UpperBody Value)
+{
+	if(ChangeUpper.IsBound()) ChangeUpper.Broadcast(Value);
+}
+

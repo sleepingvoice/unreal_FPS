@@ -2,10 +2,8 @@
 
 
 #include "Player_Weapon_Base.h"
-#include "Components/SphereComponent.h"
-#include "Engine/SkeletalMeshSocket.h"
 
-const USkeletalMeshSocket* WeaponSocket = nullptr;
+#include "GameFramework/Character.h"
 
 // Sets default values
 APlayer_Weapon_Base::APlayer_Weapon_Base()
@@ -33,15 +31,42 @@ void APlayer_Weapon_Base::SetPos()
 	this->SetActorRelativeRotation(TargetRotate);
 }
 
-FTimerHandle GravityTimerHandle;
-float GravityTime = .1f;
-
-void APlayer_Weapon_Base::Shot()
+void APlayer_Weapon_Base::Shot(ACharacter* ShotCharacter)
 {
-	MuzzleComponent->Activate();
+	if(MuzzleComponent && !MuzzleComponent->IsActive()) MuzzleComponent->Activate();
+
+	if(SparksEffect)
+	{
+		FVector StartPos = MeshComponent->GetSocketLocation(BoneName);
+		FVector FinishPos = StartPos + ShotCharacter->GetActorForwardVector() * AttackRange;
+	
+		FHitResult HitResult;
+		FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
+		Params.AddIgnoredActor(ShotCharacter);
+	
+		if(GetWorld()->LineTraceSingleByChannel(HitResult,StartPos,FinishPos,ECC_PhysicsBody, Params))
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation
+			(
+				GetWorld(),
+				SparksEffect,
+				HitResult.ImpactPoint + EffectPlusVec
+				);
+
+			//디버그용
+			//DrawDebugLine(GetWorld(), StartPos, HitResult.Location, FColor::Green, false,2.0f);
+		}
+		else
+		{
+			//디버그용
+			//DrawDebugLine(GetWorld(), StartPos, FinishPos, FColor::Red, false, 2.0f);
+		}
+	}
 }
+
+
 
 void APlayer_Weapon_Base::NoShot()
 {
-	MuzzleComponent->Deactivate();
+	if(MuzzleComponent&&MuzzleComponent->IsActive()) MuzzleComponent->Deactivate();
 }

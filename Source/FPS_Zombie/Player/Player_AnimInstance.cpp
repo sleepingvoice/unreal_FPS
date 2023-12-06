@@ -20,6 +20,7 @@ void UPlayer_AnimInstance::NativeBeginPlay()
 	{
 		PlayerState->AddMoveListener(MoveState);
 		PlayerState->AddWeaponListener(WeaponState);
+		PlayerState->AddUpperistener(UpperState);
 	}
 	
 }
