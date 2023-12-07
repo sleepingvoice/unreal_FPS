@@ -20,9 +20,22 @@ APlayer_Weapon_Base::APlayer_Weapon_Base()
 
 void APlayer_Weapon_Base::BeginPlay()
 {
+	Super::BeginPlay();
 	MuzzleComponent->Deactivate();
 }
 
+float Checktime = 0.f;
+void APlayer_Weapon_Base::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	Checktime += DeltaSeconds;
+	if(Checktime > WeaponDelay)
+	{
+		Checktime = 0;
+		ShotEffect();
+	}
+}
 
 
 void APlayer_Weapon_Base::SetPos()
@@ -34,15 +47,28 @@ void APlayer_Weapon_Base::SetPos()
 void APlayer_Weapon_Base::Shot(ACharacter* ShotCharacter)
 {
 	if(MuzzleComponent && !MuzzleComponent->IsActive()) MuzzleComponent->Activate();
+	A_ShotCharacter = ShotCharacter;
+	B_Fire = true;
+}
 
-	if(SparksEffect)
+
+
+void APlayer_Weapon_Base::NoShot()
+{
+	if(MuzzleComponent&&MuzzleComponent->IsActive()) MuzzleComponent->Deactivate();
+	B_Fire = false;
+}
+
+void APlayer_Weapon_Base::ShotEffect()
+{
+	if(SparksEffect && B_Fire)
 	{
 		FVector StartPos = MeshComponent->GetSocketLocation(BoneName);
-		FVector FinishPos = StartPos + ShotCharacter->GetActorForwardVector() * AttackRange;
+		FVector FinishPos = StartPos + A_ShotCharacter->GetActorForwardVector() * AttackRange;
 	
 		FHitResult HitResult;
 		FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
-		Params.AddIgnoredActor(ShotCharacter);
+		Params.AddIgnoredActor(A_ShotCharacter);
 	
 		if(GetWorld()->LineTraceSingleByChannel(HitResult,StartPos,FinishPos,ECC_PhysicsBody, Params))
 		{
@@ -62,11 +88,4 @@ void APlayer_Weapon_Base::Shot(ACharacter* ShotCharacter)
 			//DrawDebugLine(GetWorld(), StartPos, FinishPos, FColor::Red, false, 2.0f);
 		}
 	}
-}
-
-
-
-void APlayer_Weapon_Base::NoShot()
-{
-	if(MuzzleComponent&&MuzzleComponent->IsActive()) MuzzleComponent->Deactivate();
 }

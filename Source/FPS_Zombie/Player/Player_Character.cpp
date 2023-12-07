@@ -25,8 +25,6 @@ APlayer_Character::APlayer_Character()
 	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; 
-	CameraBoom->SocketOffset = FVector(0,0,200);
 	CameraBoom->bUsePawnControlRotation = true; 
 	
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -39,6 +37,14 @@ APlayer_Character::APlayer_Character()
 		state->AddWeaponListener(WeaponState);
 	}
 }
+
+void APlayer_Character::BeginPlay()
+{
+	Super::BeginPlay();
+	CameraBoom->SocketOffset = NormalSocket;
+	CameraBoom->TargetArmLength = NormalArmLength;
+}
+
 
 
 void APlayer_Character::AttachWeapon(int WeaponArrNum) 
@@ -76,5 +82,20 @@ void APlayer_Character::AttachWeapon(int WeaponArrNum)
 		Cast<APlayer_State>(GetPlayerState())->ChangeWeaponState(TargetState);
 	}
 }
+
+void APlayer_Character::SetZoom(bool Active)
+{
+	if(Active)
+	{
+		CameraBoom->SocketOffset = ZoomSocket;
+		CameraBoom->TargetArmLength = ZoomArmLength;
+	}
+	else
+	{
+		CameraBoom->SocketOffset = NormalSocket;
+		CameraBoom->TargetArmLength = NormalArmLength;
+	}
+}
+
 
 

@@ -22,7 +22,7 @@ void APlayer_Controller::SetupInputComponent()
 
 		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Started, this, &APlayer_Controller::LeftClick);
 		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Completed, this, &APlayer_Controller::LeftClickStop);
-		EnhancedInputComponent->BindAction(Input_RightClick, ETriggerEvent::Triggered, this, &APlayer_Controller::RightClick);
+		EnhancedInputComponent->BindAction(Input_RightClick, ETriggerEvent::Started, this, &APlayer_Controller::RightClick);
 
 		EnhancedInputComponent->BindAction(Input_Knife,ETriggerEvent::Started,this,&APlayer_Controller::KinfeHold);
 		EnhancedInputComponent->BindAction(Input_Pistol,ETriggerEvent::Started,this,&APlayer_Controller::PistolHold);
@@ -129,7 +129,7 @@ void APlayer_Controller::JumpStop(const FInputActionValue& Value)
 
 void APlayer_Controller::LeftClick(const FInputActionValue& Value)
 {
-	if(WeaponState != EAniState_Weapon::Rifle) return;
+	if(WeaponState != EAniState_Weapon::Rifle && WeaponState != EAniState_Weapon::RifleZoom) return;
 
 	Cast<APlayer_Weapon_Base>(PlayerCharacter->BeforeActor)->Shot(PlayerCharacter);
 	PlayCharacterState->ChangeUpperState(EAnistate_UpperBody::Shot);
@@ -139,7 +139,7 @@ void APlayer_Controller::LeftClick(const FInputActionValue& Value)
 
 void APlayer_Controller::LeftClickStop(const FInputActionValue& Value)
 {
-	if(WeaponState != EAniState_Weapon::Rifle) return;
+	if(WeaponState != EAniState_Weapon::Rifle && WeaponState != EAniState_Weapon::RifleZoom) return;
 
 	Cast<APlayer_Weapon_Base>(PlayerCharacter->BeforeActor)->NoShot();
 	PlayCharacterState->ChangeUpperState(EAnistate_UpperBody::Normal);
@@ -148,7 +148,20 @@ void APlayer_Controller::LeftClickStop(const FInputActionValue& Value)
 
 void APlayer_Controller::RightClick(const FInputActionValue& Value)
 {
-	
+	if(WeaponState == EAniState_Weapon::Rifle)
+	{
+		PlayerCharacter->SetZoom(true);
+		PlayCharacterState->ChangeWeaponState(EAniState_Weapon::RifleZoom);
+		MoveSpeed = PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed;
+		PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed*0.8f;
+	}
+	else if(WeaponState == EAniState_Weapon::RifleZoom)
+	{
+		PlayerCharacter->SetZoom(false);
+		PlayCharacterState->ChangeWeaponState(EAniState_Weapon::Rifle);
+		MoveSpeed = PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed;
+		PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+	}
 }
 
 void APlayer_Controller::KinfeHold(const FInputActionValue& Value)

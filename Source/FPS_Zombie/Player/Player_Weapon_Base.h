@@ -12,6 +12,11 @@ class FPS_ZOMBIE_API APlayer_Weapon_Base : public AActor
 	GENERATED_BODY()
 
 private:
+	UPROPERTY()
+	ACharacter* A_ShotCharacter;
+
+	UPROPERTY()
+	bool B_Fire = false;
 	
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "AttachPos")
@@ -22,6 +27,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
 	USkeletalMeshComponent* MeshComponent;
+
+	UPROPERTY(EditAnywhere,Category="Weapon")
+	float WeaponDelay;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Effect")
 	UNiagaraComponent* MuzzleComponent;
@@ -44,7 +52,8 @@ public:
 
 private:
 	virtual void BeginPlay() override;
-	
+
+	virtual void Tick(float DeltaSeconds) override;
 public:	
 	// Sets default values for this actor's properties
 	APlayer_Weapon_Base();
@@ -56,5 +65,8 @@ public:
 
 	UFUNCTION()
 	void NoShot();
+
+	UFUNCTION()
+	void ShotEffect();
 	
 };

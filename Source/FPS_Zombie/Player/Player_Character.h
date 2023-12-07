@@ -14,6 +14,12 @@ class FPS_ZOMBIE_API APlayer_Character : public ACharacter
 {
 	GENERATED_BODY()
 
+private:
+	TMap<EAniState_Weapon,AActor*> WeaponActorMap;
+	
+	EAniState_Weapon WeaponState = EAniState_Weapon::NoWeapon;
+
+	
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "Weapon")
 	FName WeaponSocketName;
@@ -21,13 +27,21 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Weapon")
 	TArray<TSubclassOf<class APlayer_Weapon_Base>> TargetWeaponArr;
 
-	AActor* BeforeActor = nullptr;
-private:
-	TMap<EAniState_Weapon,AActor*> WeaponActorMap;
+	UPROPERTY(EditAnywhere,Category="Weapon")
+	FVector3d ZoomSocket;
+
+	UPROPERTY(EditAnywhere,Category="Weapon")
+	FVector3d NormalSocket;
+
+	UPROPERTY(EditAnywhere,Category="Weapon")
+	float ZoomArmLength;
+
+	UPROPERTY(EditAnywhere,Category="Weapon")
+	float NormalArmLength;
 	
+	
+	AActor* BeforeActor = nullptr;
 
-
-	EAniState_Weapon WeaponState = EAniState_Weapon::NoWeapon;
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -40,6 +54,11 @@ private:
 public:
 	APlayer_Character();
 
+	virtual void BeginPlay() override;
+	
 	UFUNCTION(BlueprintCallable)
 	void AttachWeapon(int WeaponArrNum);
+
+	UFUNCTION(BlueprintCallable)
+	void SetZoom(bool Active);
 };
