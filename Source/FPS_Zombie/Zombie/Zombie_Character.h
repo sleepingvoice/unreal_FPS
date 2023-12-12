@@ -11,18 +11,20 @@ class FPS_ZOMBIE_API AZombie_Character : public ACharacter
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY()
-	bool MoveZombie = false;
+	//플레이어와 일정거리 이상 멀어질시 쫒아갈것인지?
+	UPROPERTY(EditAnywhere,Blueprintable,Category="AI") 
+	bool bChasingPlayer;
+
+	//생성지점과 일정거리 이상 멀어질시 쫒아갈것인지?
+	UPROPERTY(EditAnywhere,Blueprintable,Category="AI")
+	bool bChasingLand;
+
 
 	UPROPERTY()
-	bool DetectePlayer = false;
+	float fMoveTargetRange = 0;
 
 	UPROPERTY()
-	bool PlayerFollow = false;
-
-	UPROPERTY()
-	float MoveTargetRange = 0;
-
+	FVector3d vPlayerSpawnLocation;
 	
 private:
 	AZombie_Character();

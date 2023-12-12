@@ -14,6 +14,7 @@ const FName AZombie_AI_Controller::Key_PlayerActor(TEXT("PlayerActor"));
 AZombie_AI_Controller::AZombie_AI_Controller()
 {
 	MonsterCon = Cast<APlayerController>(GetPawn());
+	
 	SetPerceptionComponent(*CreateOptionalDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception")));
 
 	GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AZombie_AI_Controller::OnPawnDetected);
@@ -38,7 +39,7 @@ void AZombie_AI_Controller::RunAI()
 
 void AZombie_AI_Controller::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result)
 {
-	Cast<AZombie_Character>(GetPawn())->MoveZombie = false;
+	bMoveZombie = false;
 }
 
 void AZombie_AI_Controller::OnPawnDetected(const TArray<AActor*>& DetectedPawns)
@@ -47,9 +48,18 @@ void AZombie_AI_Controller::OnPawnDetected(const TArray<AActor*>& DetectedPawns)
 	{
 		if(DetectedPawns[i] == Cast<AActor>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0)))
 		{
-			Cast<AZombie_Character>(GetPawn())->DetectePlayer = true;
+			bPlayerFind = true;
+			PlayerCharacter = Cast<ACharacter>(DetectedPawns[i]);
 		}
+		return;
 	}
-	
 }
 
+
+bool AZombie_AI_Controller::CanChasing()
+{
+	auto player =Cast<AZombie_Character>(GetPawn());
+	if(player->bChasingPlayer && !bChasingPlayer) return false;
+	if(player->bChasingLand && !bChasingLand) return false;
+	return bPlayerFind;
+}

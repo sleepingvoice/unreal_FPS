@@ -14,10 +14,40 @@ class FPS_ZOMBIE_API AZombie_AI_Controller : public AAIController
 
 public:
 	UPROPERTY(EditAnywhere,Blueprintable,Category="AI")
-	bool CheckMove;
+	float fRandomFindLength;
+	
+	UPROPERTY(EditAnywhere,Blueprintable,Category="AI")
+	float fFindDitanceLimit;
 
 	UPROPERTY(EditAnywhere,Blueprintable,Category="AI")
-	float DitanceLimit;
+	float fAttackDistanceLimit;
+
+	//좀비가 이동중인지 체크
+	UPROPERTY()
+	bool bMoveZombie = false;
+	
+	//플레이어를 공격가능한지 확인
+    UPROPERTY()
+	bool bAttackPlayer = false;
+
+	//플레이어를 찾았는지 확인
+	UPROPERTY()
+	bool bPlayerFind = false;
+	
+	//플레이어를 공격가능한 범위인지 확인
+	UPROPERTY()
+	bool bAttackDis = false;
+
+	//플레이어를 쫒아갈수있는지 확인 
+	UPROPERTY()
+	bool bChasingPlayer = false;
+
+	//스폰지점으로부터 플레이어를 쫒아가도 되는지 확인
+	UPROPERTY()
+	bool bChasingLand = false;
+
+	UPROPERTY()
+	ACharacter* PlayerCharacter;
 	
 	// 블랙보드 값
 	static const FName Key_LimitDistance;
@@ -29,10 +59,9 @@ private:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="AI",meta=(AllowPrivateAccess="true"))
 	class UBehaviorTree* BTAsset;
-
 public:
-	UPROPERTY(EditAnywhere,Blueprintable,Category="AI")
-	TArray<int32> TargetNum;
+	bool CanChasing();
+	
 private:
 	AZombie_AI_Controller();
 	
@@ -44,4 +73,6 @@ private:
 
 	UFUNCTION(Blueprintable)
 	void OnPawnDetected(const TArray<AActor*>& DetectedPawns);
+
+
 };
