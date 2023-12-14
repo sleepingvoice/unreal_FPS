@@ -58,21 +58,22 @@ private:
 	APlayerController* MonsterCon;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="AI",meta=(AllowPrivateAccess="true"))
-	class UBehaviorTree* BTAsset;
+	UBehaviorTree* BTAsset;
 public:
 	bool CanChasing();
+
+	void RunAI(UBehaviorTree* btAsset);
+
+	virtual void OnPossess(APawn* InPawn) override;
 	
 private:
 	AZombie_AI_Controller();
-	
-	virtual void OnPossess(APawn* InPawn) override;
-	
-	void RunAI();
 
+	virtual void BeginPlay() override;
+	
 	virtual void OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result) override;
 
 	UFUNCTION(Blueprintable)
 	void OnPawnDetected(const TArray<AActor*>& DetectedPawns);
-
-
+	
 };

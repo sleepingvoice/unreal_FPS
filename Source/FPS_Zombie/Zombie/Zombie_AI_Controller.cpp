@@ -2,7 +2,6 @@
 
 
 #include "Zombie_AI_Controller.h"
-
 #include "Zombie_Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -18,19 +17,35 @@ AZombie_AI_Controller::AZombie_AI_Controller()
 	SetPerceptionComponent(*CreateOptionalDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception")));
 
 	GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AZombie_AI_Controller::OnPawnDetected);
+	
 }
+
+void AZombie_AI_Controller::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 
 
 void AZombie_AI_Controller::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	RunAI();
+	InPawn->AIControllerClass = AZombie_AI_Controller::StaticClass();
+	RunAI(nullptr);
 }
 
 
-void AZombie_AI_Controller::RunAI()
+void AZombie_AI_Controller::RunAI(UBehaviorTree* btAsset)
 {
+	UE_LOG(LogTemp,Log,TEXT("AI 빙의"));
+	
+	if(btAsset != nullptr)
+	{
+		Cast<UBehaviorTreeComponent>(BTAsset)->StopTree();
+		BTAsset = btAsset;
+	}
+	
 	if(BTAsset!=nullptr)
 	{
 		RunBehaviorTree(BTAsset);
@@ -39,6 +54,7 @@ void AZombie_AI_Controller::RunAI()
 
 void AZombie_AI_Controller::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result)
 {
+	Super::OnMoveCompleted(RequestID, Result);
 	bMoveZombie = false;
 }
 
@@ -59,7 +75,9 @@ void AZombie_AI_Controller::OnPawnDetected(const TArray<AActor*>& DetectedPawns)
 bool AZombie_AI_Controller::CanChasing()
 {
 	auto player =Cast<AZombie_Character>(GetPawn());
+	if(!player) return false;
 	if(player->bChasingPlayer && !bChasingPlayer) return false;
 	if(player->bChasingLand && !bChasingLand) return false;
+	
 	return bPlayerFind;
 }

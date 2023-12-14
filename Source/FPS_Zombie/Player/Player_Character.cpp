@@ -46,7 +46,6 @@ void APlayer_Character::BeginPlay()
 }
 
 
-
 void APlayer_Character::AttachWeapon(int WeaponArrNum) 
 {
 	EAniState_Weapon TargetState = (EAniState_Weapon)(WeaponArrNum +1);

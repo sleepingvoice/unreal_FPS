@@ -4,8 +4,6 @@
 #include "Player_AnimInstance.h"
 #include "Player_State.h"
 
-APlayer_State* Target;
-
 UPlayer_AnimInstance::UPlayer_AnimInstance()
 {
 	

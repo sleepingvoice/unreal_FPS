@@ -61,4 +61,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetZoom(bool Active);
+	
 };

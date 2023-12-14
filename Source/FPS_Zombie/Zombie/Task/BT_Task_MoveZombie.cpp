@@ -33,9 +33,10 @@ EBTNodeResult::Type UBT_Task_MoveZombie::ExecuteTask(UBehaviorTreeComponent& Own
 	{
 		FNavLocation NextPatrol;
 
-		if (NavSystem->GetRandomPointInNavigableRadius(FVector::ZeroVector, AiCon->fRandomFindLength, NextPatrol))
+		if (NavSystem->GetRandomReachablePointInRadius(FVector::ZeroVector, AiCon->fRandomFindLength, NextPatrol))
 		{
-			AiCon->MoveToLocation(NextPatrol);
+			FVector Vect = NextPatrol.Location;
+			AiCon->MoveToLocation(Vect);
 			AiCon->bMoveZombie = true;
 			return EBTNodeResult::Succeeded;
 		}
