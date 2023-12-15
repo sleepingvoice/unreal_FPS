@@ -39,9 +39,6 @@ private:
 
 	FMulti_ZombieAiState dZombieAIState;
 
-	UFUNCTION()
-	void OnChange_BTAssets();
-
 	UPROPERTY()
 	AZombie_AI_Controller* AiCon;
 

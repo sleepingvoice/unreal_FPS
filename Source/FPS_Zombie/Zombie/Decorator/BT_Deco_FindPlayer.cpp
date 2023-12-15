@@ -13,6 +13,6 @@ bool UBT_Deco_FindPlayer::CalculateRawConditionValue(UBehaviorTreeComponent& Own
 {
 	AZombie_AI_Controller* AICon = Cast<AZombie_AI_Controller>(OwnerComp.GetAIOwner());
 	if(AICon == nullptr) return false;
-
+	
 	return AICon->CanChasing();
 }

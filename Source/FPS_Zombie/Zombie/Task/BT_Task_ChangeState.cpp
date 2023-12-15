@@ -17,7 +17,7 @@ EBTNodeResult::Type UBT_Task_ChangeState::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	auto ZombieCharacter = Cast<AZombie_Character>(ControllingPawn);
 	if(nullptr == ZombieCharacter) return EBTNodeResult::Failed;
-
+	
 	ZombieCharacter->SetStateValue(TargetState);
 	return EBTNodeResult::Succeeded;
 }

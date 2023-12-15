@@ -30,22 +30,13 @@ void AZombie_AI_Controller::BeginPlay()
 void AZombie_AI_Controller::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
-	InPawn->AIControllerClass = AZombie_AI_Controller::StaticClass();
-	RunAI(nullptr);
+	
+	RunAI();
 }
 
 
-void AZombie_AI_Controller::RunAI(UBehaviorTree* btAsset)
+void AZombie_AI_Controller::RunAI()
 {
-	UE_LOG(LogTemp,Log,TEXT("AI 빙의"));
-	
-	if(btAsset != nullptr)
-	{
-		Cast<UBehaviorTreeComponent>(BTAsset)->StopTree();
-		BTAsset = btAsset;
-	}
-	
 	if(BTAsset!=nullptr)
 	{
 		RunBehaviorTree(BTAsset);
@@ -77,7 +68,7 @@ bool AZombie_AI_Controller::CanChasing()
 	auto player =Cast<AZombie_Character>(GetPawn());
 	if(!player) return false;
 	if(player->bChasingPlayer && !bChasingPlayer) return false;
+	UE_LOG(LogTemp,Log,TEXT("멀어지는거 통과했는디?"));
 	if(player->bChasingLand && !bChasingLand) return false;
-	
 	return bPlayerFind;
 }

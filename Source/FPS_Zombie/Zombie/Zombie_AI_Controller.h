@@ -62,7 +62,7 @@ private:
 public:
 	bool CanChasing();
 
-	void RunAI(UBehaviorTree* btAsset);
+	void RunAI();
 
 	virtual void OnPossess(APawn* InPawn) override;
 	

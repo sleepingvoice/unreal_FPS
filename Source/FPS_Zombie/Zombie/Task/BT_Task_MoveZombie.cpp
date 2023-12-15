@@ -26,7 +26,7 @@ EBTNodeResult::Type UBT_Task_MoveZombie::ExecuteTask(UBehaviorTreeComponent& Own
 	if(AiCon->CanChasing()) // 찾았을때
 	{
 		AiCon->MoveToActor(AiCon->PlayerCharacter);
-		AiCon->bMoveZombie = true;
+		AiCon->bMoveZombie = false;
 		return EBTNodeResult::Succeeded;
 	}
 	else // 못찾았을때 랜덤한 지역으로 이동
