@@ -14,6 +14,7 @@ void UZombie_AnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
 	AiCon = Cast<AZombie_AI_Controller>(TryGetPawnOwner()->Controller);
+	Cast<AZombie_Character>(TryGetPawnOwner())->AddStateListener([&](EZombieAIstate Setstate){ AiState = Setstate; });
 }
 
 

@@ -4,12 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Zombie_AI_Controller.h"
+#include "Zombie_Enum.h"
 #include "Animation/AnimInstance.h"
 #include "Zombie_AnimInstance.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class FPS_ZOMBIE_API UZombie_AnimInstance : public UAnimInstance
 {
@@ -21,6 +19,9 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	bool CheckRun = false;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	EZombieAIstate AiState = EZombieAIstate::Idle;
 	
 private:
 	UPROPERTY()

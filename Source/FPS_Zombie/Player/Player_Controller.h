@@ -86,6 +86,8 @@ public:
 	void RifleHold(const FInputActionValue& Value);
 	
 	void CheckJump();
+
+	void ZoomOut();
 private:
 	virtual void BeginPlay() override;
 

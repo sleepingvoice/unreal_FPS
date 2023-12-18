@@ -15,8 +15,6 @@ class FPS_ZOMBIE_API APlayer_Character : public ACharacter
 	GENERATED_BODY()
 
 private:
-	TMap<EAniState_Weapon,AActor*> WeaponActorMap;
-	
 	EAniState_Weapon WeaponState = EAniState_Weapon::NoWeapon;
 
 	
@@ -38,7 +36,6 @@ public:
 
 	UPROPERTY(EditAnywhere,Category="Weapon")
 	float NormalArmLength;
-	
 	
 	AActor* BeforeActor = nullptr;
 

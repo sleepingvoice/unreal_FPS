@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Zombie_Character.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "Zombie_Spawner.generated.h"
 
@@ -22,7 +23,7 @@ public:
 	float Damge;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	TSubclassOf<AZombie_Character> ZombieCharacter;
+	UClass* ZombieCharacter;
 };
 
 UCLASS()
@@ -33,7 +34,22 @@ class FPS_ZOMBIE_API AZombie_Spawner : public AActor
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TArray<FMonsterSpawnType> SpawnTypeArr;
-	
+
+	UPROPERTY()
+	float SpawnRange;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	USphereComponent* DebugSphere;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	float SpawnValue;
+
+private:
+	virtual void BeginPlay() override;
+
+	void SpawnMonster(FMonsterSpawnType SpawnType);
+
+	FVector GetCollisionPointBelowLocation(const FVector& StartLocation);
 public:	
 	AZombie_Spawner();
 };

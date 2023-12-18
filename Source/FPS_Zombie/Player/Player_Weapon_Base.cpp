@@ -2,7 +2,6 @@
 
 
 #include "Player_Weapon_Base.h"
-
 #include "GameFramework/Character.h"
 
 // Sets default values
@@ -25,9 +24,12 @@ void APlayer_Weapon_Base::BeginPlay()
 }
 
 float Checktime = 0.f;
+
 void APlayer_Weapon_Base::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	if(SetWeapon != NowWeapon && NowWeapon != EAniState_Weapon::RifleZoom) return;
 	
 	Checktime += DeltaSeconds;
 	if(Checktime > WeaponDelay)
@@ -36,6 +38,13 @@ void APlayer_Weapon_Base::Tick(float DeltaSeconds)
 		ShotEffect();
 	}
 }
+
+void APlayer_Weapon_Base::InitState(int value,APlayer_State* state)
+{
+	SetWeapon = (EAniState_Weapon)value;
+	state->AddWeaponListener(NowWeapon);
+}
+
 
 
 void APlayer_Weapon_Base::SetPos()

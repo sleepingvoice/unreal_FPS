@@ -49,30 +49,28 @@ void APlayer_Character::BeginPlay()
 void APlayer_Character::AttachWeapon(int WeaponArrNum) 
 {
 	EAniState_Weapon TargetState = (EAniState_Weapon)(WeaponArrNum +1);
-	UE_LOG(LogTemp,Log,TEXT("%d"),TargetState);
 	
 	if(WeaponState!=TargetState && TargetState > EAniState_Weapon::NoWeapon)
 	{
 		
-		if(BeforeActor) BeforeActor->SetActorHiddenInGame(true);
+		if(BeforeActor) BeforeActor->Destroy();
 		
 		CheckWeapon = WeaponArrNum;
 		
-		if(!WeaponActorMap.Contains(TargetState) && WeaponArrNum < TargetWeaponArr.Num())
+		if(WeaponArrNum < TargetWeaponArr.Num())
 		{
-			AActor* SpawnWeapon = GetWorld()->SpawnActor<APlayer_Weapon_Base>(TargetWeaponArr[WeaponArrNum]);
-			WeaponActorMap.Add(TargetState,SpawnWeapon);
-		}
+			APlayer_Weapon_Base* SpawnWeapon = GetWorld()->SpawnActor<APlayer_Weapon_Base>(TargetWeaponArr[WeaponArrNum]);
+			SpawnWeapon->InitState(WeaponArrNum+1,Cast<APlayer_State>(GetPlayerState()));
 		
-		const USkeletalMeshSocket* WeaponSocket = GetMesh()->GetSocketByName(WeaponSocketName);
+			const USkeletalMeshSocket* WeaponSocket = GetMesh()->GetSocketByName(WeaponSocketName);
 		
-		if(WeaponSocket && WeaponActorMap.Contains(TargetState))
-		{
-			WeaponSocket->AttachActor(WeaponActorMap[TargetState],GetMesh());
-			Cast<APlayer_Weapon_Base>(WeaponActorMap[TargetState])->SetPos();
-			Cast<APlayer_State>(GetPlayerState())->ChangeWeaponState(TargetState);
-			WeaponActorMap[TargetState]->SetActorHiddenInGame(false);
-			BeforeActor = WeaponActorMap[TargetState];
+			if(WeaponSocket)
+			{
+				WeaponSocket->AttachActor(SpawnWeapon,GetMesh());
+				Cast<APlayer_Weapon_Base>(SpawnWeapon)->SetPos();
+				Cast<APlayer_State>(GetPlayerState())->ChangeWeaponState(TargetState);
+				BeforeActor = SpawnWeapon;
+			}
 		}
 	}
 	else if(TargetState == EAniState_Weapon::NoWeapon)

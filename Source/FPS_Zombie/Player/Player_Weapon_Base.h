@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Player_Enum.h"
+#include "Player_State.h"
 #include "Player_Weapon_Base.generated.h"
 
 UCLASS()
@@ -54,6 +56,10 @@ private:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	EAniState_Weapon NowWeapon;
+
+	EAniState_Weapon SetWeapon;
 public:	
 	// Sets default values for this actor's properties
 	APlayer_Weapon_Base();
@@ -68,5 +74,8 @@ public:
 
 	UFUNCTION()
 	void ShotEffect();
+
+	UFUNCTION()
+	void InitState(int value,APlayer_State* state);
 	
 };

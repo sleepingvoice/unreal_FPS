@@ -156,26 +156,38 @@ void APlayer_Controller::RightClick(const FInputActionValue& Value)
 	}
 	else if(WeaponState == EAniState_Weapon::RifleZoom)
 	{
-		PlayerCharacter->SetZoom(false);
+		ZoomOut();
 		PlayCharacterState->ChangeWeaponState(EAniState_Weapon::Rifle);
+	}
+}
+
+void APlayer_Controller::ZoomOut()
+{
+	if(WeaponState == EAniState_Weapon::RifleZoom)
+	{
+		PlayerCharacter->SetZoom(false);
 		MoveSpeed = PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed;
 		PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
 	}
 }
 
+
 void APlayer_Controller::KinfeHold(const FInputActionValue& Value)
 {
+	ZoomOut();
 	WeaponState != EAniState_Weapon::Knife ? PlayerCharacter->AttachWeapon(0):PlayerCharacter->AttachWeapon(-1);
 }
 
 void APlayer_Controller::PistolHold(const FInputActionValue& Value)
 {
+	ZoomOut();
 	WeaponState != EAniState_Weapon::Pistol ? PlayerCharacter->AttachWeapon(1):PlayerCharacter->AttachWeapon(-1);
 }
 
 
 void APlayer_Controller::RifleHold(const FInputActionValue& Value)
 {
+	ZoomOut();
 	WeaponState != EAniState_Weapon::Rifle ? PlayerCharacter->AttachWeapon(2):PlayerCharacter->AttachWeapon(-1);
 }
 

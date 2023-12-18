@@ -30,6 +30,7 @@ void UBT_Ser_AttackDisCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 	if(DistancePlayer < AICon->fAttackDistanceLimit) // 공격 범위 안인경우
 	{
 		AICon->bAttackDis = true;
+		Cast<AZombie_Character>(ControllingPawn)->SetStateValue(EZombieAIstate::Attack);
 	}
 	else
 	{

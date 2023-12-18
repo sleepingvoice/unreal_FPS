@@ -4,6 +4,7 @@
 #include "BT_Ser_DisCheck.h"
 #include "../Zombie_AI_Controller.h"
 #include "../Zombie_Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 UBT_Ser_DisCheck::UBT_Ser_DisCheck()
@@ -28,18 +29,22 @@ void UBT_Ser_DisCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 	if(ZombiChar == nullptr) return;
 	
 	float DistancePlayer = ControllingPawn->GetDistanceTo(PlayerActor);
+	ACharacter* Player = Cast<ACharacter>(ControllingPawn);
 	
 	if(ZombiChar->bChasingPlayer) //멀어지면 안쫒아가게 되어있는 경우
 	{
 		if(DistancePlayer > AICon->fFindDitanceLimit) // 플레이어까지의 거리가 멀때
 		{
-			UE_LOG(LogTemp,Log,TEXT("멀어짐"));
 			AICon->bChasingPlayer = false;
 			AICon->bPlayerFind = false;
+			Player->GetCharacterMovement()->MaxWalkSpeed = 50;
+			Cast<AZombie_Character>(ControllingPawn)->SetStateValue(EZombieAIstate::Idle);
 		}
 		else
 		{
 			AICon->bChasingPlayer = true;
+			Player->GetCharacterMovement()->MaxWalkSpeed = 100;
+			Cast<AZombie_Character>(ControllingPawn)->SetStateValue(EZombieAIstate::Find);
 		}
 	}
 
@@ -51,10 +56,14 @@ void UBT_Ser_DisCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 		{
 			AICon->bChasingLand = false;
 			AICon->bPlayerFind = false;
+			Player->GetCharacterMovement()->MaxWalkSpeed = 50;
+			Cast<AZombie_Character>(ControllingPawn)->SetStateValue(EZombieAIstate::Idle);
 		}
 		else
 		{
 			AICon->bChasingPlayer = true;
+			Player->GetCharacterMovement()->MaxWalkSpeed = 100;
+			Cast<AZombie_Character>(ControllingPawn)->SetStateValue(EZombieAIstate::Find);
 		}
 	}
 
