@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "Zombie_Spawner.generated.h"
 
+
 USTRUCT(Atomic,BlueprintType)
 struct FMonsterSpawnType
 {

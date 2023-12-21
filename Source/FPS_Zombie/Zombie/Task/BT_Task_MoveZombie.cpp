@@ -15,6 +15,7 @@ UBT_Task_MoveZombie::UBT_Task_MoveZombie()
 
 EBTNodeResult::Type UBT_Task_MoveZombie::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	Super::ExecuteTask(OwnerComp, NodeMemory);
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (nullptr == ControllingPawn) return EBTNodeResult::Failed;
 

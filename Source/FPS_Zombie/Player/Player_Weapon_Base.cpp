@@ -2,6 +2,8 @@
 
 
 #include "Player_Weapon_Base.h"
+
+#include "Player_Character.h"
 #include "GameFramework/Character.h"
 
 // Sets default values
@@ -72,7 +74,7 @@ void APlayer_Weapon_Base::ShotEffect()
 {
 	if(SparksEffect && B_Fire)
 	{
-		FVector StartPos = MeshComponent->GetSocketLocation(BoneName);
+		FVector StartPos =  A_ShotCharacter->GetActorForwardVector() * AttackRange;
 		FVector FinishPos = StartPos + A_ShotCharacter->GetActorForwardVector() * AttackRange;
 	
 		FHitResult HitResult;
@@ -89,12 +91,12 @@ void APlayer_Weapon_Base::ShotEffect()
 				);
 
 			//디버그용
-			//DrawDebugLine(GetWorld(), StartPos, HitResult.Location, FColor::Green, false,2.0f);
+			DrawDebugLine(GetWorld(), StartPos, HitResult.Location, FColor::Green, false,2.0f);
 		}
 		else
 		{
 			//디버그용
-			//DrawDebugLine(GetWorld(), StartPos, FinishPos, FColor::Red, false, 2.0f);
+			DrawDebugLine(GetWorld(), StartPos, FinishPos, FColor::Red, false, 2.0f);
 		}
 	}
 }

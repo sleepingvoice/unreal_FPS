@@ -13,16 +13,13 @@ UBT_Ser_AttackDisCheck::UBT_Ser_AttackDisCheck()
 
 void UBT_Ser_AttackDisCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	AActor* PlayerActor = Cast<AActor>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
-	if(PlayerActor == nullptr) return;
-	
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if(ControllingPawn == nullptr) return;
-
+	
 	AZombie_AI_Controller* AICon = Cast<AZombie_AI_Controller>(ControllingPawn);
 	if (AICon == nullptr) return;
 
-	AZombie_Character* PlayerCharacter = Cast<AZombie_Character>(PlayerActor);
+	AZombie_Character* PlayerCharacter = Cast<AZombie_Character>(AICon->PlayerCharacter);
 	if(PlayerCharacter) return;
 	
 	float DistancePlayer = ControllingPawn->GetDistanceTo(PlayerCharacter);

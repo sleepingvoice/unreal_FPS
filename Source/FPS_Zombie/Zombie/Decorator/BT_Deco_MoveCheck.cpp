@@ -13,9 +13,6 @@ UBT_Deco_MoveCheck::UBT_Deco_MoveCheck()
 
 bool UBT_Deco_MoveCheck::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
-	ACharacter* PlayerActor = UGameplayStatics::GetPlayerCharacter(GetWorld(),0);
-	if(PlayerActor == nullptr) return false;
-
 	AZombie_AI_Controller* AICon = Cast<AZombie_AI_Controller>(OwnerComp.GetAIOwner());
 	if(AICon == nullptr) return false;
 

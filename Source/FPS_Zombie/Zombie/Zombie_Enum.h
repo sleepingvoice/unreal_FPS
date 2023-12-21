@@ -1,6 +1,5 @@
 #pragma once
 
-
 UENUM(BlueprintType)
 enum class EZombieAIstate : uint8
 {

@@ -11,6 +11,8 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FMulti_MoveState,EAniState_Move);
 DECLARE_MULTICAST_DELEGATE_OneParam(FMUlti_WeaponState,EAniState_Weapon);
 DECLARE_MULTICAST_DELEGATE_OneParam(FMUlti_UpperState,EAnistate_UpperBody);
 
+
+
 UCLASS()
 class FPS_ZOMBIE_API APlayer_State : public APlayerState
 {

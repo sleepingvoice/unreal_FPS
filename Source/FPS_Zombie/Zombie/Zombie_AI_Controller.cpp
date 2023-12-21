@@ -53,7 +53,7 @@ void AZombie_AI_Controller::OnPawnDetected(const TArray<AActor*>& DetectedPawns)
 {
 	for(int i = 0;i<DetectedPawns.Num();i++)
 	{
-		if(DetectedPawns[i] == Cast<AActor>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0)))
+		if(Cast<APawn>(DetectedPawns[i])->IsPlayerControlled())
 		{
 			bPlayerFind = true;
 			PlayerCharacter = Cast<ACharacter>(DetectedPawns[i]);
