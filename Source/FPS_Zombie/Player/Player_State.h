@@ -28,6 +28,9 @@ public:
 	UPROPERTY()
 	EAnistate_UpperBody PlayerUpperBody;
 
+	UPROPERTY()
+	UCanvas* NowCanvas;
+
 private:
 	FMulti_MoveState ChangeMove;
 

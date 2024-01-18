@@ -10,6 +10,7 @@
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "FPS_Zombie/Default/Player_Widget.h"
 #include "Player_Character.generated.h"
 
 USTRUCT(Atomic,BlueprintType)
@@ -38,6 +39,8 @@ private:
 	EAniState_Move MoveState = EAniState_Move::Idle;
 	EAnistate_UpperBody UpperState = EAnistate_UpperBody::Normal;
 	int CheckWeapon = -1;
+
+	FTimerHandle ShotTimer;
 	
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "Weapon")
@@ -58,7 +61,7 @@ public:
 	UPROPERTY(EditAnywhere,Category="Weapon")
 	float NormalArmLength;
 	
-	AActor* BeforeActor = nullptr;
+	APlayer_Weapon_Base* BeforeActor = nullptr;
 
 	UPROPERTY(EditAnywhere,Category="PlayerState")
 	FState NowPlayerState;
@@ -99,11 +102,17 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category=Animation,meta=(AllowPrivateAccess="true"))
 	float DownDis;
+	
 #pragma endregion 입력 변수
+
+	UPROPERTY()
+	UPlayer_Widget* PlayerUI;
+	
 	
 private:
 	
 #pragma region 입력 함수
+	
 	void Move(const FInputActionValue& Value);
 
 	void MoveStop(const FInputActionValue& Value);
@@ -117,18 +126,21 @@ private:
 	void LeftClickStop(const FInputActionValue& Value);
 
 	void RightClick(const FInputActionValue& Value);
-
-	void KinfeHold(const FInputActionValue& Value);
-
-	void PistolHold(const FInputActionValue& Value);
-
-	void RifleHold(const FInputActionValue& Value);
+	
+	void WeaponChange(const FInputActionValue& Value,int32 IWeaponValue);
 	
 	void CheckJump();
 
 	void ZoomOut();
+	
 #pragma endregion 입력 함수
 
+	FVector GetMouseRayStart(UImage* ImageObj);
+	
+	UPlayer_Widget* GetPlayerUI();
+
+	void ShotCheck(FVector StartPos);
+	
 	virtual void Tick(float DeltaSeconds) override;
 public:
 	APlayer_Character();

@@ -1,9 +1,12 @@
 
 #include "Player_Character.h"
+
+#include "Player_GameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 APlayer_Character::APlayer_Character()
@@ -63,6 +66,8 @@ void APlayer_Character::BeginPlay()
 		PlayCharacterState->AddWeaponListener(WeaponState);
 		PlayCharacterState->AddUpperistener(UpperState);
 	}
+
+	
 }
 
 
@@ -81,6 +86,9 @@ void APlayer_Character::Tick(float DeltaSeconds)
 	{
 		CheckJump();
 	}
+
+	if(PlayerUI == nullptr)
+		PlayerUI = Cast<UPlayer_Widget>((Cast<APlayer_GameMode>(UGameplayStatics::GetGameMode(GetWorld())))->NowUIWidget);
 }
 
 void APlayer_Character::AttachWeapon(int WeaponArrNum) 
@@ -152,9 +160,9 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Completed, this, &APlayer_Character::LeftClickStop);
 		EnhancedInputComponent->BindAction(Input_RightClick, ETriggerEvent::Started, this, &APlayer_Character::RightClick);
 
-		EnhancedInputComponent->BindAction(Input_Knife,ETriggerEvent::Started,this,&APlayer_Character::KinfeHold);
-		EnhancedInputComponent->BindAction(Input_Pistol,ETriggerEvent::Started,this,&APlayer_Character::PistolHold);
-		EnhancedInputComponent->BindAction(Input_Rifle,ETriggerEvent::Started,this,&APlayer_Character::RifleHold);
+		EnhancedInputComponent->BindAction(Input_Knife,ETriggerEvent::Started,this,&APlayer_Character::WeaponChange,0);
+		EnhancedInputComponent->BindAction(Input_Pistol,ETriggerEvent::Started,this,&APlayer_Character::WeaponChange,1);
+		EnhancedInputComponent->BindAction(Input_Rifle,ETriggerEvent::Started,this,&APlayer_Character::WeaponChange,2);
 	}
 }
 
@@ -213,6 +221,7 @@ void APlayer_Character::Look(const FInputActionValue& Value)
 }
 
 float MoveSpeed = 0;
+
 void APlayer_Character::JumpAct(const FInputActionValue& Value)
 {
 	Jump();
@@ -228,10 +237,19 @@ void APlayer_Character::LeftClick(const FInputActionValue& Value)
 {
 	if(WeaponState != EAniState_Weapon::Rifle && WeaponState != EAniState_Weapon::RifleZoom) return;
 
-	Cast<APlayer_Weapon_Base>(BeforeActor)->Shot(this);
+	BeforeActor->Shot(this);
 	Cast<APlayer_State>(GetPlayerState())->ChangeUpperState(EAnistate_UpperBody::Shot);
 	MoveSpeed = GetCharacterMovement()->MaxWalkSpeed;
 	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed*0.5f;
+
+	
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindLambda([this]()
+	{
+		ShotCheck(GetMouseRayStart(GetPlayerUI()->ShotImage));
+	});
+	
+	GetWorldTimerManager().SetTimer(ShotTimer, TimerDelegate, .1f, true);
 }
 
 void APlayer_Character::LeftClickStop(const FInputActionValue& Value)
@@ -241,6 +259,8 @@ void APlayer_Character::LeftClickStop(const FInputActionValue& Value)
 	Cast<APlayer_Weapon_Base>(BeforeActor)->NoShot();
 	Cast<APlayer_State>(GetPlayerState())->ChangeUpperState(EAnistate_UpperBody::Normal);
 	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+	
+	GetWorldTimerManager().ClearTimer(ShotTimer);
 }
 
 void APlayer_Character::RightClick(const FInputActionValue& Value)
@@ -269,24 +289,11 @@ void APlayer_Character::ZoomOut()
 	}
 }
 
-
-void APlayer_Character::KinfeHold(const FInputActionValue& Value)
+void APlayer_Character::WeaponChange(const FInputActionValue& Value,int32 IWeaponValue)
 {
 	ZoomOut();
-	WeaponState != EAniState_Weapon::Knife ? AttachWeapon(0):AttachWeapon(-1);
-}
-
-void APlayer_Character::PistolHold(const FInputActionValue& Value)
-{
-	ZoomOut();
-	WeaponState != EAniState_Weapon::Pistol ? AttachWeapon(1):AttachWeapon(-1);
-}
-
-
-void APlayer_Character::RifleHold(const FInputActionValue& Value)
-{
-	ZoomOut();
-	WeaponState != EAniState_Weapon::Rifle ? AttachWeapon(2):AttachWeapon(-1);
+	if(IWeaponValue < 3)
+		AttachWeapon(IWeaponValue);
 }
 
 void APlayer_Character::CheckJump()
@@ -307,4 +314,70 @@ void APlayer_Character::CheckJump()
 	}
 }
 
+
+FVector APlayer_Character::GetMouseRayStart(UImage* ImageObj)
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController)
+		return FVector::ZeroVector;
+
+
+	FGeometry geo = ImageObj->GetPaintSpaceGeometry();
+	FVector2D paintPos = geo.GetAbsolutePosition();
+
+	FVector WorldLocation, WorldDirection;
+	PlayerController->DeprojectScreenPositionToWorld(paintPos.X, paintPos.Y, WorldLocation, WorldDirection);
+	
+	return WorldLocation;
+}
+
+
 #pragma endregion 입력 관련 함수
+
+
+UPlayer_Widget* APlayer_Character::GetPlayerUI()
+{
+	if(PlayerUI == nullptr)
+		PlayerUI = Cast<UPlayer_Widget>((Cast<APlayer_GameMode>(UGameplayStatics::GetGameMode(GetWorld())))->NowUIWidget);
+
+	return PlayerUI;
+}
+
+
+void APlayer_Character::ShotCheck(FVector StartPos)
+{
+
+	FTransform CameraTransform = FollowCamera->GetComponentTransform();
+	
+	FVector CamForward = CameraTransform.GetUnitAxis(EAxis::X);
+	CamForward += CameraTransform.GetLocation();
+	
+	FVector ActorForward = GetActorLocation()+ GetActorForwardVector();
+	
+	float AngleRadians = FMath::Acos(FVector::DotProduct(CamForward.GetSafeNormal(), ActorForward.GetSafeNormal()));
+	
+	float TangentValue = FMath::Tan(AngleRadians);
+	
+	float LengthOfVectorA = (FMath::IsNearlyZero(AngleRadians)) ? 0.0f : FVector::DotProduct(ActorForward, CamForward.GetSafeNormal()) / TangentValue;
+	
+	FHitResult HitResult;
+	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
+	Params.AddIgnoredActor(this);
+
+	//DrawDebugBox(GetWorld(),StartPos,FVector(10,10,10),FColor::Green,false,5);
+	//DrawDebugBox(GetWorld(),GetActorLocation()+ GetActorForwardVector() * LengthOfVectorA,FVector(10,10,10),FColor::Red,false,5);
+	
+	if(GetWorld()->LineTraceSingleByChannel(HitResult,StartPos,GetActorLocation()+ GetActorForwardVector() * LengthOfVectorA,ECC_PhysicsBody, Params))
+	{
+		BeforeActor->ShotEffect(HitResult.Location);
+		//이펙트 스폰
+
+		//디버그용
+		//DrawDebugLine(GetWorld(), StartPos, HitResult.Location, FColor::Green, false,2.0f);
+	}
+	else
+	{
+		//디버그용
+		//DrawDebugLine(GetWorld(), StartPos, GetActorLocation()+ GetActorForwardVector() * LengthOfVectorA, FColor::Red, false, 2.0f);
+	}
+}

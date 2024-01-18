@@ -73,7 +73,7 @@ public:
 	void NoShot();
 
 	UFUNCTION()
-	void ShotEffect();
+	void ShotEffect(FVector EffectLocation);
 
 	UFUNCTION()
 	void InitState(int value,APlayer_State* state);
