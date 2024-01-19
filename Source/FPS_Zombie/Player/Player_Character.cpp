@@ -17,7 +17,7 @@ APlayer_Character::APlayer_Character()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 	
-	GetCharacterMovement()->bOrientRotationToMovement = true; 	
+	GetCharacterMovement()->bOrientRotationToMovement = false; 	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); 
 	
 	GetCharacterMovement()->AirControl = 0.35f;
@@ -66,8 +66,6 @@ void APlayer_Character::BeginPlay()
 		PlayCharacterState->AddWeaponListener(WeaponState);
 		PlayCharacterState->AddUpperistener(UpperState);
 	}
-
-	
 }
 
 
@@ -104,7 +102,6 @@ void APlayer_Character::AttachWeapon(int WeaponArrNum)
 		if(WeaponArrNum < TargetWeaponArr.Num())
 		{
 			APlayer_Weapon_Base* SpawnWeapon = GetWorld()->SpawnActor<APlayer_Weapon_Base>(TargetWeaponArr[WeaponArrNum]);
-			SpawnWeapon->InitState(WeaponArrNum+1,Cast<APlayer_State>(GetPlayerState()));
 		
 			const USkeletalMeshSocket* WeaponSocket = GetMesh()->GetSocketByName(WeaponSocketName);
 		
@@ -174,20 +171,15 @@ void APlayer_Character::Move(const FInputActionValue& Value)
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 	
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	AddMovementInput(ForwardDirection, MovementVector.Y);
-	AddMovementInput(RightDirection, MovementVector.X);
+	AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+	AddMovementInput(GetActorRightVector(), MovementVector.X);
 	
+	//키보드는 이동만 처리
+	//회전은 마우스를 사용
 	if(MoveState == EAniState_Move::Idle)
 	{
 		Cast<APlayer_State>(GetPlayerState())->ChangeMoveState(EAniState_Move::Walk);
-	}
-
-	if(WeaponState == EAniState_Weapon::RifleZoom) // 줌 중이면 이동시 회전을 막음
-	{
-		GetController()->SetControlRotation(CameraBoom->GetRelativeRotation());
-		SetActorRotation(FRotator(0,GetControlRotation().Yaw,0));
 	}
 }
 
@@ -237,7 +229,7 @@ void APlayer_Character::LeftClick(const FInputActionValue& Value)
 {
 	if(WeaponState != EAniState_Weapon::Rifle && WeaponState != EAniState_Weapon::RifleZoom) return;
 
-	BeforeActor->Shot(this);
+	BeforeActor->ShotStart(this);
 	Cast<APlayer_State>(GetPlayerState())->ChangeUpperState(EAnistate_UpperBody::Shot);
 	MoveSpeed = GetCharacterMovement()->MaxWalkSpeed;
 	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed*0.5f;
@@ -256,7 +248,7 @@ void APlayer_Character::LeftClickStop(const FInputActionValue& Value)
 {
 	if(WeaponState != EAniState_Weapon::Rifle && WeaponState != EAniState_Weapon::RifleZoom) return;
 
-	Cast<APlayer_Weapon_Base>(BeforeActor)->NoShot();
+	Cast<APlayer_Weapon_Base>(BeforeActor)->ShotStop();
 	Cast<APlayer_State>(GetPlayerState())->ChangeUpperState(EAnistate_UpperBody::Normal);
 	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
 	

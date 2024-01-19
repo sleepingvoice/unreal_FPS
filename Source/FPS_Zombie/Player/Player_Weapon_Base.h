@@ -5,7 +5,6 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Player_Enum.h"
-#include "Player_State.h"
 #include "Player_Weapon_Base.generated.h"
 
 UCLASS()
@@ -13,69 +12,49 @@ class FPS_ZOMBIE_API APlayer_Weapon_Base : public AActor
 {
 	GENERATED_BODY()
 
+	//변수
 private:
-	UPROPERTY()
-	ACharacter* A_ShotCharacter;
-
-	UPROPERTY()
-	bool B_Fire = false;
 	
 public:
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "AttachPos")
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "Attach")
 	FVector TargetPos;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "AttachPos")
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "Attach")
 	FRotator TargetRotate;
 
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "Attach")
+	EAniState_Weapon TargetWeapon;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
 	USkeletalMeshComponent* MeshComponent;
 
 	UPROPERTY(EditAnywhere,Category="Weapon")
-	float WeaponDelay;
-
+	float AttackDelay;
+	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Effect")
 	UNiagaraComponent* MuzzleComponent;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
-	FName BoneName;
-
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
-	UNiagaraSystem* SparksEffect;
+	UNiagaraSystem* HitEffect;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Effect")
-	FVector EffectPlusVec;
+	FVector HitPlusVec; // 이펙트 보정 값
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Weapon")
-	float AttackRange;
-
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Weapon")
-	float CheckAttackTime;
-
-
+	//함수
 private:
 	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaSeconds) override;
-
-	EAniState_Weapon NowWeapon;
-
-	EAniState_Weapon SetWeapon;
+	
 public:	
-	// Sets default values for this actor's properties
 	APlayer_Weapon_Base();
 
 	void SetPos();
 
 	UFUNCTION()
-	void Shot(ACharacter* ShotCharacter);
+	void ShotStart(ACharacter* ShotCharacter);
 
 	UFUNCTION()
-	void NoShot();
+	void ShotStop();
 
 	UFUNCTION()
 	void ShotEffect(FVector EffectLocation);
-
-	UFUNCTION()
-	void InitState(int value,APlayer_State* state);
-	
 };

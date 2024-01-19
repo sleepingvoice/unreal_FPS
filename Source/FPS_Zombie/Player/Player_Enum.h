@@ -25,7 +25,7 @@ UENUM(BlueprintType)
 enum class EAnistate_UpperBody : uint8
 {
 	Normal = 0 UMETA(DisplayName = "Normal"),
-	Shot = 1 UMETA(DisPlayName = "Shot"),
+	Shot = 1 UMETA(DisPlayName = "ShotStart"),
 	Reload = 2 UMETA(DisPlayName = "Reload"),
 	Hit = 3 UMETA(DisPlayName = "Hit")
 };
