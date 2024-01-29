@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "FPS_Zombie/Default/Player_Widget.h"
+
 #include "Player_Character.generated.h"
 
 USTRUCT(Atomic,BlueprintType)
@@ -35,13 +36,21 @@ class FPS_ZOMBIE_API APlayer_Character : public ACharacter
 	GENERATED_BODY()
 
 private:
+	UPROPERTY()
 	EAniState_Weapon WeaponState = EAniState_Weapon::NoWeapon;
+
+	UPROPERTY()
 	EAniState_Move MoveState = EAniState_Move::Idle;
+
+	UPROPERTY()
 	EAnistate_UpperBody UpperState = EAnistate_UpperBody::Normal;
+
+	UPROPERTY()
+	bool Zoom = false;
+	
 	int CheckWeapon = -1;
 
 	FTimerHandle ShotTimer;
-	
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category= "Weapon")
 	FName WeaponSocketName;
@@ -131,7 +140,7 @@ private:
 	
 	void CheckJump();
 
-	void ZoomOut();
+	void ChangeZoom(bool On);
 	
 #pragma endregion 입력 함수
 
@@ -151,8 +160,5 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void AttachWeapon(int WeaponArrNum);
-
-	UFUNCTION(BlueprintCallable)
-	void SetZoom(bool Active);
 	
 };

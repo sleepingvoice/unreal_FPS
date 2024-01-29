@@ -16,9 +16,9 @@ void UPlayer_AnimInstance::NativeBeginPlay()
 	auto PlayerState = Cast<APlayer_State>(TryGetPawnOwner()->GetPlayerState());
 	if(PlayerState)
 	{
-		PlayerState->AddMoveListener(MoveState);
-		PlayerState->AddWeaponListener(WeaponState);
-		PlayerState->AddUpperistener(UpperState);
+		PlayerState->AddMoveListener([this](EAniState_Move SetState) { MoveState = SetState; });
+		PlayerState->AddWeaponListener([this](EAniState_Weapon SetWeapon){ WeaponState = SetWeapon;});
+		PlayerState->AddUpperistener([this](EAnistate_UpperBody SetUpper){UpperState = SetUpper;});
 	}
 	
 }

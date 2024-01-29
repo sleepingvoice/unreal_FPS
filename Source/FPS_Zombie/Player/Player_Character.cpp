@@ -6,7 +6,6 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 
 
 APlayer_Character::APlayer_Character()
@@ -33,12 +32,6 @@ APlayer_Character::APlayer_Character()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	auto state = Cast<APlayer_State>(GetPlayerState());
-	if(state)
-	{
-		state->AddWeaponListener(WeaponState);
-	}
-
 	NowPlayerState = FState();
 	NowPlayerState.Damge = 10;
 	NowPlayerState.Hp = 10;
@@ -62,9 +55,9 @@ void APlayer_Character::BeginPlay()
 	auto PlayCharacterState = Cast<APlayer_State>(GetPlayerState());
 	if(PlayCharacterState)
 	{
-		PlayCharacterState->AddMoveListener(MoveState);
-		PlayCharacterState->AddWeaponListener(WeaponState);
-		PlayCharacterState->AddUpperistener(UpperState);
+		PlayCharacterState->AddMoveListener([this](EAniState_Move SetState) { MoveState = SetState; });
+		PlayCharacterState->AddWeaponListener([this](EAniState_Weapon SetWeapon){ WeaponState = SetWeapon;});
+		PlayCharacterState->AddUpperistener([this](EAnistate_UpperBody SetUpper){UpperState = SetUpper;});
 	}
 }
 
@@ -121,22 +114,6 @@ void APlayer_Character::AttachWeapon(int WeaponArrNum)
 	}
 }
 
-void APlayer_Character::SetZoom(bool Active)
-{
-	if(Active)
-	{
-		CameraBoom->SocketOffset = ZoomSocket;
-		CameraBoom->TargetArmLength = ZoomArmLength;
-		FollowCamera->SetRelativeRotation(FRotator(0,0,0));
-	}
-	else
-	{
-		CameraBoom->SocketOffset = NormalSocket;
-		CameraBoom->TargetArmLength = NormalArmLength;
-		FollowCamera->SetRelativeRotation(FRotator(-20,0,0));
-	}
-}
-
 #pragma region 입력 관련 함수
 
 void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -145,23 +122,35 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this, &APlayer_Character::JumpAct);
-		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Completed, this, &APlayer_Character::StopJumping);
+		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Started, this,
+			&APlayer_Character::JumpAct);
+		EnhancedInputComponent->BindAction(Input_Jump, ETriggerEvent::Completed, this,
+			&APlayer_Character::StopJumping);
 		
-		EnhancedInputComponent->BindAction(Input_Move, ETriggerEvent::Triggered, this, &APlayer_Character::Move);
-		EnhancedInputComponent->BindAction(Input_Move, ETriggerEvent::Completed, this, &APlayer_Character::MoveStop);
+		EnhancedInputComponent->BindAction(Input_Move, ETriggerEvent::Triggered, this,
+			&APlayer_Character::Move);
+		EnhancedInputComponent->BindAction(Input_Move, ETriggerEvent::Completed, this,
+			&APlayer_Character::MoveStop);
 		
-		EnhancedInputComponent->BindAction(Input_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Look);
+		EnhancedInputComponent->BindAction(Input_Look, ETriggerEvent::Triggered, this,
+			&APlayer_Character::Look);
 
-		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Started, this, &APlayer_Character::LeftClick);
-		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Completed, this, &APlayer_Character::LeftClickStop);
-		EnhancedInputComponent->BindAction(Input_RightClick, ETriggerEvent::Started, this, &APlayer_Character::RightClick);
+		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Started, this,
+			&APlayer_Character::LeftClick);
+		EnhancedInputComponent->BindAction(Input_LeftClick, ETriggerEvent::Completed, this,
+			&APlayer_Character::LeftClickStop);
+		EnhancedInputComponent->BindAction(Input_RightClick, ETriggerEvent::Started, this,
+			&APlayer_Character::RightClick);
 
-		EnhancedInputComponent->BindAction(Input_Knife,ETriggerEvent::Started,this,&APlayer_Character::WeaponChange,0);
-		EnhancedInputComponent->BindAction(Input_Pistol,ETriggerEvent::Started,this,&APlayer_Character::WeaponChange,1);
-		EnhancedInputComponent->BindAction(Input_Rifle,ETriggerEvent::Started,this,&APlayer_Character::WeaponChange,2);
+		EnhancedInputComponent->BindAction(Input_Knife,ETriggerEvent::Started,this,
+			&APlayer_Character::WeaponChange,0);
+		EnhancedInputComponent->BindAction(Input_Pistol,ETriggerEvent::Started,this,
+			&APlayer_Character::WeaponChange,1);
+		EnhancedInputComponent->BindAction(Input_Rifle,ETriggerEvent::Started,this,
+			&APlayer_Character::WeaponChange,2);
 	}
 }
+
 
 void APlayer_Character::Move(const FInputActionValue& Value)
 {
@@ -175,20 +164,12 @@ void APlayer_Character::Move(const FInputActionValue& Value)
 	AddMovementInput(GetActorForwardVector(), MovementVector.Y);
 	AddMovementInput(GetActorRightVector(), MovementVector.X);
 	
-	//키보드는 이동만 처리
-	//회전은 마우스를 사용
-	if(MoveState == EAniState_Move::Idle)
-	{
-		Cast<APlayer_State>(GetPlayerState())->ChangeMoveState(EAniState_Move::Walk);
-	}
+	Cast<APlayer_State>(GetPlayerState())->ChangeMoveState(EAniState_Move::Walk);
 }
 
 void APlayer_Character::MoveStop(const FInputActionValue& Value)
 {
-	if(MoveState == EAniState_Move::Walk)
-	{
-		Cast<APlayer_State>(GetPlayerState())->ChangeMoveState(EAniState_Move::Idle);
-	}
+	Cast<APlayer_State>(GetPlayerState())->ChangeMoveState(EAniState_Move::Idle);
 }
 
 
@@ -196,20 +177,7 @@ void APlayer_Character::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 	
-	FRotator tmp_CamRotate = CameraBoom->GetRelativeRotation();
-	tmp_CamRotate.Pitch += LookAxisVector.Y;
-	tmp_CamRotate.Pitch = FMath::Clamp(tmp_CamRotate.Pitch,-30.f,30.f);
-	tmp_CamRotate.Yaw += LookAxisVector.X;
-	
-	CameraBoom->SetRelativeRotation(tmp_CamRotate);
-	GetController()->SetControlRotation(CameraBoom->GetRelativeRotation());
-	
-	if(WeaponState == EAniState_Weapon::RifleZoom)
-	{
-		tmp_CamRotate.Pitch = 0;
-		CameraBoom->SetRelativeRotation(tmp_CamRotate);
-		SetActorRotation(FRotator(0,GetControlRotation().Yaw,0));
-	}
+	AddControllerYawInput(LookAxisVector.X);
 }
 
 float MoveSpeed = 0;
@@ -217,17 +185,18 @@ float MoveSpeed = 0;
 void APlayer_Character::JumpAct(const FInputActionValue& Value)
 {
 	Jump();
+	Cast<APlayer_State>(GetPlayerState())->ChangeMoveState(EAniState_Move::Jump);
+	
 	if(MoveState != EAniState_Move::Jump)
 	{
 		MoveSpeed = GetCharacterMovement()->MaxWalkSpeed;
 		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed/2;
-		Cast<APlayer_State>(GetPlayerState())->ChangeMoveState(EAniState_Move::Jump);
 	}
 }
 
 void APlayer_Character::LeftClick(const FInputActionValue& Value)
 {
-	if(WeaponState != EAniState_Weapon::Rifle && WeaponState != EAniState_Weapon::RifleZoom) return;
+	if(WeaponState != EAniState_Weapon::Rifle) return;
 
 	BeforeActor->ShotStart(this);
 	Cast<APlayer_State>(GetPlayerState())->ChangeUpperState(EAnistate_UpperBody::Shot);
@@ -246,7 +215,7 @@ void APlayer_Character::LeftClick(const FInputActionValue& Value)
 
 void APlayer_Character::LeftClickStop(const FInputActionValue& Value)
 {
-	if(WeaponState != EAniState_Weapon::Rifle && WeaponState != EAniState_Weapon::RifleZoom) return;
+	if(WeaponState != EAniState_Weapon::Rifle) return;
 
 	Cast<APlayer_Weapon_Base>(BeforeActor)->ShotStop();
 	Cast<APlayer_State>(GetPlayerState())->ChangeUpperState(EAnistate_UpperBody::Normal);
@@ -257,33 +226,11 @@ void APlayer_Character::LeftClickStop(const FInputActionValue& Value)
 
 void APlayer_Character::RightClick(const FInputActionValue& Value)
 {
-	if(WeaponState == EAniState_Weapon::Rifle)
-	{
-		SetZoom(true);
-		Cast<APlayer_State>(GetPlayerState())->ChangeWeaponState(EAniState_Weapon::RifleZoom);
-		MoveSpeed = GetCharacterMovement()->MaxWalkSpeed;
-		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed*0.8f;
-	}
-	else if(WeaponState == EAniState_Weapon::RifleZoom)
-	{
-		ZoomOut();
-		Cast<APlayer_State>(GetPlayerState())->ChangeWeaponState(EAniState_Weapon::Rifle);
-	}
-}
-
-void APlayer_Character::ZoomOut()
-{
-	if(WeaponState == EAniState_Weapon::RifleZoom)
-	{
-		SetZoom(false);
-		MoveSpeed = GetCharacterMovement()->MaxWalkSpeed;
-		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
-	}
+	ChangeZoom(!Zoom);
 }
 
 void APlayer_Character::WeaponChange(const FInputActionValue& Value,int32 IWeaponValue)
 {
-	ZoomOut();
 	if(IWeaponValue < 3)
 		AttachWeapon(IWeaponValue);
 }
@@ -338,7 +285,6 @@ UPlayer_Widget* APlayer_Character::GetPlayerUI()
 
 void APlayer_Character::ShotCheck(FVector StartPos)
 {
-
 	FTransform CameraTransform = FollowCamera->GetComponentTransform();
 	
 	FVector CamForward = CameraTransform.GetUnitAxis(EAxis::X);
@@ -371,5 +317,27 @@ void APlayer_Character::ShotCheck(FVector StartPos)
 	{
 		//디버그용
 		//DrawDebugLine(GetWorld(), StartPos, GetActorLocation()+ GetActorForwardVector() * LengthOfVectorA, FColor::Red, false, 2.0f);
+	}
+}
+
+void APlayer_Character::ChangeZoom(bool On)
+{
+	if(On)
+	{
+		CameraBoom->SocketOffset = ZoomSocket;
+		CameraBoom->TargetArmLength = ZoomArmLength;
+		FollowCamera->SetRelativeRotation(FRotator(0,0,0));
+		MoveSpeed = GetCharacterMovement()->MaxWalkSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed*0.8f;
+		Zoom = true;
+	}
+	else
+	{
+		CameraBoom->SocketOffset = NormalSocket;
+		CameraBoom->TargetArmLength = NormalArmLength;
+		FollowCamera->SetRelativeRotation(FRotator(-20,0,0));
+		MoveSpeed = GetCharacterMovement()->MaxWalkSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+		Zoom = false;
 	}
 }
